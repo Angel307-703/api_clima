@@ -29,13 +29,28 @@ export default function App() {
       const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
       const weatherData = await weatherRes.json();
 
+      if (!weatherData.current_weather) {
+        throw new Error('No se pudieron obtener los datos meteorológicos.');
+      }
+
+      const temp = weatherData.current_weather.temperature;
+      const viento = weatherData.current_weather.windspeed;
+      const sensacion = temp;
+
+      let mensaje = 'Temperatura moderada';
+      if (temp > 25) {
+        mensaje = 'Hace calor';
+      } else if (temp < 15) {
+        mensaje = 'Hace frío';
+      }
+
       setClima({
         nombre: name,
         pais: country || 'Desconocido',
-        temperatura: weatherData.current_weather.temperature,
-        sensacion: weatherData.current_weather.apparent_temperature,
-        viento: weatherData.current_weather.wind_speed,
-        mensaje: weatherData.current_weather.temperature < 20 ? 'Hace calor' : 'Hace frío'
+        temperatura: temp,
+        sensacion: sensacion,
+        viento: viento,
+        mensaje: mensaje
       });
     } catch (err) {
       setError(err.message);
