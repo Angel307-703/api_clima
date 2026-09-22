@@ -33,24 +33,13 @@ export default function App() {
         throw new Error('No se pudieron obtener los datos meteorológicos.');
       }
 
-      const temp = weatherData.current_weather.temperature;
-      const viento = weatherData.current_weather.windspeed;
-      const sensacion = temp;
-
-      let mensaje = 'Temperatura moderada';
-      if (temp > 25) {
-        mensaje = 'Hace calor';
-      } else if (temp < 15) {
-        mensaje = 'Hace frío';
-      }
-
       setClima({
         nombre: name,
         pais: country || 'Desconocido',
-        temperatura: temp,
-        sensacion: sensacion,
-        viento: viento,
-        mensaje: mensaje
+        temperatura: weatherData.current_weather.temperature,
+        sensacion: weatherData.current_weather.apparent_temperature || weatherData.current_weather.temperature,
+        viento: weatherData.current_weather.windspeed,
+        mensaje: weatherData.current_weather.temperature > 20 ? 'Hace calor' : 'Hace frío'
       });
     } catch (err) {
       setError(err.message);
@@ -60,31 +49,35 @@ export default function App() {
   };
 
   return (
-    <div className="container">
-      <div className="card">
-        <h1>Consulta del clima</h1>
-        <p>Busca una ciudad y consulta sus condiciones actuales.</p>
-        <form onSubmit={buscarClima}>
+    <div className="container" style={{ paddingTop: '40px' }}>
+      <div className="card" style={{ padding: '24px', background: '#fff', borderRadius: '8px', border: '1px solid #e0e0e0', maxWidth: '500px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '8px' }}>Consulta del clima</h1>
+        <p style={{ fontSize: '14px', color: '#666', marginBottom: '16px' }}>Busca una ciudad y consulta sus condiciones actuales.</p>
+        
+        <form onSubmit={buscarClima} style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
           <input 
             type="text" 
             value={ciudad} 
             onChange={(e) => setCiudad(e.target.value)} 
             placeholder="Ejemplo: Bogotá"
+            style={{ flex: 1, padding: '8px 12px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px' }}
           />
-          <button type="submit">Consultar clima</button>
+          <button type="submit" style={{ padding: '8px 16px', background: '#f1f1f1', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px', cursor: 'pointer' }}>
+            Consultar clima
+          </button>
         </form>
 
         {loading && <p>Cargando...</p>}
-        {error && <p className="error">{error}</p>}
+        {error && <p className="error" style={{ color: '#d9534f', fontSize: '14px' }}>{error}</p>}
 
         {clima && (
-          <div className="weather-info">
-            <h2>{clima.nombre}</h2>
-            <p>País: {clima.pais}</p>
-            <p>Temperatura: {clima.temperatura} °C</p>
-            <p>Sensación térmica: {clima.sensacion} °C</p>
-            <p>Viento: {clima.viento} km/h</p>
-            <p>{clima.mensaje}</p>
+          <div className="weather-info" style={{ marginTop: '16px', padding: '16px', background: '#f9f9f9', borderRadius: '6px', border: '1px solid #eee' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px' }}>{clima.nombre}</h2>
+            <p style={{ margin: '4px 0', fontSize: '14px' }}>País: {clima.pais}</p>
+            <p style={{ margin: '4px 0', fontSize: '14px' }}>Temperatura: {clima.temperatura} °C</p>
+            <p style={{ margin: '4px 0', fontSize: '14px' }}>Sensación térmica: {clima.sensacion} °C</p>
+            <p style={{ margin: '4px 0', fontSize: '14px' }}>Viento: {clima.viento} km/h</p>
+            <p style={{ margin: '8px 0 0 0', fontSize: '14px', fontWeight: 'bold' }}>{clima.mensaje}</p>
           </div>
         )}
       </div>
